@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+SPC Academy — Learn, Build & Master Real Skills
+{% endblock title %}
+
+{% block content %}
+
+<!-- Safe Django Flash Messages Handling (Prevents White Screen if partials missing) -->
+<div class="container mt-3">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% comment %} Fallback attempt for partial if you use one {% endcomment %}
+    {% endif %}
+</div>
+
+<!-- Custom Simple Styling for Human Touch -->
+<style>
+    .hero-wrapper {
+        background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 4rem 0 3.5rem 0;
+    }
+
+    .course-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: 1px solid #e2e8f0 !important;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08) !important;
+    }
+
+    .course-title-link {
+        color: #0f172a;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .course-title-link:hover {
+        color: #4f46e5;
+    }
+
+    .human-note-card {
+        background-color: #fef3c7;
+        border: 1px solid #fde68a;
+        color: #78350f;
+    }
+</style>
+
+<!-- Hero Section: Warm & Human Intro -->
+<section class="hero-wrapper">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7 text-center text-lg-start">
+                <span class="badge bg-indigo-100 text-primary border border-primary-subtle rounded-pill px-3 py-2 mb-3 fw-semibold" style="background-color: #e0e7ff;">
+                    👋 Welcome to SPC Academy
+                </span>
+                <h1 class="display-5 fw-bold text-dark mb-3">
+                    Learn by building.<br>
+                    <span style="color: #4f46e5;">Master skills that matter.</span>
+                </h1>
+                <p class="lead text-secondary mb-4 pe-lg-3" style="font-size: 1.1rem; line-height: 1.6;">
+                    Step-by-step courses designed for real people. Practice real-world coding projects, level up your technical skills, and build a career you're proud of.
+                </p>
+                
+                <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+                    {% if not user.is_authenticated %}
+                        <a href="{% url 'account_signup' %}" class="btn btn-spc-primary btn-lg shadow-sm">
+                            Get Started Free <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'courses' %}" class="btn btn-outline-dark btn-lg rounded-pill px-4 fw-semibold">
+                        Explore Courses
+                    </a>
+                </div>
+            </div>
+
+            <!-- Simple Creative Feature Card -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border border-light">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fs-4" style="width: 48px; height: 48px; background-color: #4f46e5 !important;">
+                            🚀
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark">Student-Centric Learning</h6>
+                            <small class="text-muted">Zero filler, 100% practical knowledge</small>
+                        </div>
+                    </div>
+                    
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2 text-secondary small">
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> Build real portfolio-ready projects
+                        </li>
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> Clear, structured step-by-step lessons
+                        </li>
+                        <li class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success"></i> Learn at your own comfortable pace
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Directory Section -->
+<section class="py-5">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Featured Courses</h2>
+                <p class="text-muted mb-0 small">Pick a course and start learning today.</p>
+            </div>
+            <a href="{% url 'courses' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold mt-2 mt-sm-0">
+                View All <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="row g-4">
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden course-card bg-white">
+                            <a href="{% url 'course-detail' course.course_slug %}">
+                                {% if course.course_image %}
+                                    <img src="{{ course.course_image.url }}" class="card-img-top object-fit-cover" height="200" alt="{{ course.course_title }}">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center text-secondary border-bottom" style="height: 200px;">
+                                        <i class="bi bi-journal-code display-4 text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                            <div class="card-body d-flex flex-column p-4">
+                                <h5 class="fw-bold mb-3">
+                                    <a href="{% url 'course-detail' course.course_slug %}" class="course-title-link">
+                                        {{ course.course_title }}
+                                    </a>
+                                </h5>
+                                
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>{{ course.course_created_at|timesince }} ago
+                                    </small>
+                                    <a href="{% url 'course-detail' course.course_slug %}" class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #4f46e5; border: none;">
+                                        View Course
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="col-12 text-center py-5">
+                    <div class="p-5 bg-white rounded-4 shadow-sm border">
+                        <i class="bi bi-journal-x text-muted display-5 d-block mb-2"></i>
+                        <h5 class="fw-bold text-dark">No courses available yet</h5>
+                        <p class="text-muted mb-0 small">Check back soon! We are actively adding new learning modules.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Warm Human Community Note -->
+<section class="pb-5">
+    <div class="container">
+        <div class="human-note-card p-4 rounded-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 shadow-sm">
+            <div>
+                <h5 class="fw-bold mb-1"><i class="bi bi-lightbulb me-2"></i>Have questions or topic suggestions?</h5>
+                <p class="mb-0 small opacity-90">We regularly update course materials based on real student requests and industry trends.</p>
+            </div>
+            <a href="{% url 'courses' %}" class="btn btn-dark rounded-pill px-4 btn-sm fw-semibold text-nowrap">
+                Browse Directory
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

@@ -1,0 +1,407 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        {% block title %}
+        SPC Academy - Elevate Your Skills
+        {% endblock title %}
+    </title>
+
+    {% block meta %}
+    <meta name="description" content="SPC Academy - Premium AI-Powered E-Learning Platform for modern skills.">
+    <meta name="keywords" content="SPC Academy, E-Learning, Online Courses, Skill Development">
+    {% endblock meta %}
+
+    <meta name="author" content="SPC Academy Team">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- Google Fonts (Plus Jakarta Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom CSS Styles -->
+    <style>
+        :root {
+            --spc-primary: #4f46e5;
+            --spc-primary-hover: #4338ca;
+            --spc-accent: #06b6d4;
+            --spc-dark: #0f172a;
+            --spc-card-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Modern Navbar Header */
+        .spc-navbar {
+            background-color: var(--spc-dark);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.8rem 0;
+        }
+
+        .navbar-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: #ffffff !important;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-brand-logo span {
+            color: var(--spc-accent);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #cbd5e1 !important;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #ffffff !important;
+        }
+
+        /* Dropdown Styling */
+        .dropdown-menu {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #1e293b;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-top: 10px !important;
+        }
+
+        .dropdown-item {
+            color: #cbd5e1;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--spc-primary);
+            color: #ffffff;
+        }
+
+        .dropdown-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Search Input Bar */
+        .search-box {
+            position: relative;
+            min-width: 230px;
+        }
+
+        .search-box input {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-radius: 50px;
+            padding-left: 2.3rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-box input:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: var(--spc-accent);
+            box-shadow: 0 0 0 0.25rem rgba(6, 182, 212, 0.25);
+            color: #ffffff;
+        }
+
+        .search-box .bi-search {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        /* Buttons */
+        .btn-spc-primary {
+            background-color: var(--spc-primary);
+            color: #ffffff;
+            border-radius: 50px;
+            font-weight: 600;
+            padding: 0.5rem 1.3rem;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-spc-primary:hover {
+            background-color: var(--spc-primary-hover);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .btn-spc-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-radius: 50px;
+            font-weight: 600;
+            padding: 0.5rem 1.3rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-spc-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: #ffffff;
+        }
+
+        /* User Avatar Badge */
+        .user-nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 0.35rem 0.8rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Body Content Push */
+        main {
+            flex: 1;
+        }
+
+        /* Modern Footer */
+        footer {
+            background-color: var(--spc-dark);
+            color: #94a3b8;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 3rem;
+            padding-bottom: 2rem;
+            margin-top: auto;
+        }
+
+        footer h5 {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: var(--spc-accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1.5rem;
+            margin-top: 2.5rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header / Navbar Section -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark spc-navbar">
+            <div class="container">
+                <!-- Brand Logo -->
+                <a class="navbar-brand navbar-brand-logo" href="{% url 'home' %}">
+                    <img src="{% static 'images/favicon.png' %}" alt="SPC" width="122" height="52" class="d-inline-block align-text-top" onerror="this.onerror=null; this.remove();">
+                    
+                </a>
+
+                <!-- Mobile Toggler -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#spcNavbarContent" aria-controls="spcNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Items -->
+                <div class="collapse navbar-collapse" id="spcNavbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'courses' %}">Courses</a>
+                        </li>
+                        <!-- Categories Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Categories
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                {% for topic in topics %}
+                                    <li><a class="dropdown-item" href="{% url 'topic-courses' topic.topic_slug %}"><i class="bi bi-tag-fill me-2 text-info"></i>{{ topic }}</a></li>
+                                {% empty %}
+                                    <li><span class="dropdown-item text-muted">No categories available</span></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- Search Form -->
+                    <form class="d-flex me-lg-3 my-2 my-lg-0 search-box" method="get" action="{% url 'search-courses' %}">
+                        <i class="bi bi-search"></i>
+                        <input class="form-control" type="search" name="q" placeholder="Search courses..." aria-label="Search">
+                    </form>
+
+                    <!-- Authentication / User Menu -->
+                    <ul class="navbar-nav align-items-lg-center">
+                        {% if user.is_authenticated %}
+                            <!-- My Courses Dropdown -->
+                            <li class="nav-item dropdown me-lg-2">
+                                <a class="nav-link dropdown-toggle" href="#" id="myCoursesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-journal-bookmark me-1"></i> My Courses
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="myCoursesDropdown">
+                                    {% if enrolled_courses %}
+                                        {% for enrolled_course in enrolled_courses %}
+                                            <li>
+                                                <a class="dropdown-item text-truncate" style="max-width: 240px;" href="{% url 'lecture' enrolled_course.course.course_slug %}">
+                                                    <i class="bi bi-play-circle me-1 text-primary"></i>{{ enrolled_course.course.course_title }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><span class="dropdown-item text-muted">No enrolled courses</span></li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-center fw-bold" href="{% url 'enrolled-courses' %}">See All Courses</a></li>
+                                </ul>
+                            </li>
+
+                            <!-- User Profile Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle user-nav-btn d-flex align-items-center gap-2" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle fs-6 text-info"></i>
+                                    <span>{{ user.username }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'account_change_password' %}"><i class="bi bi-shield-lock me-2"></i>Change Password</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" action="{% url 'account_logout' %}" class="m-0">
+                                            {% csrf_token %}
+                                            {% if redirect_field_value %}
+                                                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                                            {% endif %}
+                                            <button type="submit" class="dropdown-item text-danger border-0 bg-transparent w-100 text-start">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <!-- Auth Buttons for Visitors -->
+                            <li class="nav-item d-flex gap-2">
+                                <a href="{% url 'account_login' %}" class="btn btn-spc-outline btn-sm">Log in</a>
+                                <a href="{% url 'account_signup' %}" class="btn btn-spc-primary btn-sm">Sign up</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main role="main">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <div class="row g-4">
+                <!-- Col 1: About SPC Academy -->
+                <div class="col-lg-5 col-md-6">
+                    <div class="navbar-brand-logo mb-3">
+                        <a class="navbar-brand navbar-brand-logo" href="{% url 'home' %}">
+                    <img src="{% static 'images/favicon.png' %}" alt="SPC" width="122" height="52" class="d-inline-block align-text-top" onerror="this.onerror=null; this.remove();">
+                    
+                </a>
+                    </div>
+                    <p class="text-slate-400 pe-lg-4">
+                        <strong>SPC Academy</strong> empowers learners with industry-leading skills, hands-on real-world projects, and personalized learning pathways designed for future leaders.
+                    </p>
+                    <div class="d-flex gap-3 fs-5 mt-3">
+                        <a href="https://www.facebook.com/spcacademybd/"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.youtube.com/@spcacademybd"><i class="bi bi-youtube"></i></a>
+                        <a href="https://www.linkedin.com/company/spcacademybd"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://github.com/mahfuzswe"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Quick Links -->
+                <div class="col-lg-3 col-md-6">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="{% url 'home' %}"><i class="bi bi-chevron-right me-1 small"></i> Home</a></li>
+                        <li><a href="{% url 'courses' %}"><i class="bi bi-chevron-right me-1 small"></i> All Courses</a></li>
+                        <li><a href="#"><i class="bi bi-chevron-right me-1 small"></i> Live Workshops</a></li>
+                        <li><a href="#"><i class="bi bi-chevron-right me-1 small"></i> Community</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Student Support -->
+                <div class="col-lg-4 col-md-12">
+                    <h5>Keep Learning 🎓 Keep Growing 🪴</h5>
+                    <p class="small">Join thousands of students building their career with SPC Academy today.</p>
+                    <div class="p-3 rounded-3 bg-slate-800 border border-slate-700 mt-2" style="background: rgba(255,255,255,0.03);">
+                        <i class="bi bi-quote text-info fs-4 d-block mb-1"></i>
+                        <span class="fst-italic small">"The best way to predict your future is to create it through continuous learning."</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <p class="mb-0">&copy; {% now "Y" %} <strong>SPC Academy</strong>. All rights reserved.</p>
+                <a href="#" class="btn btn-sm btn-spc-outline rounded-pill px-3 py-1">
+                    Back to top <i class="bi bi-arrow-up-short"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 Bundle JS (Includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block extra_js %}
+    {% endblock extra_js %}
+</body>
+</html>

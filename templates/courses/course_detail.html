@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {{ course.seo_course_title }}
+{% endblock title %}
+
+{% block meta %}
+    <meta name="description" content="{{ course.seo_course_description }}">
+    <meta name="keywords" content="{{ course.seo_course_keywords }}">
+{% endblock meta %}
+
+{% block content %}
+
+<!-- Safe Flash Messages Container -->
+<div class="container mt-3">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% else %}
+        
+    {% endif %}
+</div>
+
+<style>
+    .course-detail-header {
+        background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 2.5rem 0;
+    }
+
+    .sticky-course-card {
+        position: sticky;
+        top: 90px;
+        z-index: 10;
+    }
+
+    .lecture-item {
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .lecture-item:hover:not(.disabled) {
+        border-left-color: #4f46e5;
+        background-color: #f8fafc;
+    }
+
+    .lecture-item.disabled {
+        background-color: #ffffff;
+        opacity: 0.75;
+        cursor: not-allowed;
+    }
+
+    .preview-badge {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+</style>
+
+<!-- Header & Breadcrumbs Section -->
+<header class="course-detail-header">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'courses' %}" class="text-decoration-none text-secondary">Courses</a></li>
+                <li class="breadcrumb-item active fw-medium text-dark" aria-current="page">{{ course.course_title }}</li>
+            </ol>
+        </nav>
+
+        <h1 class="display-6 fw-bold text-dark mb-2">{{ course.course_title }}</h1>
+        <p class="text-muted small mb-0">
+            <i class="bi bi-clock me-1"></i> Added {{ course.course_created_at|timesince }} ago
+            <span class="mx-2">•</span>
+            <i class="bi bi-journal-text me-1"></i> {{ lectures.count }} Lecture{% if lectures.count != 1 %}s{% endif %}
+        </p>
+    </div>
+</header>
+
+<!-- Main Course Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            
+            <!-- Left Column: Overview & Lectures -->
+            <div class="col-lg-8">
+                
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border">
+                    <h3 class="h5 fw-bold text-dark mb-3">
+                        <i class="bi bi-info-circle text-primary me-2"></i>Course Overview
+                    </h3>
+                    <div class="text-secondary lead fs-6" style="line-height: 1.7; white-space: pre-line;">
+                        {{ course.course_description }}
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="h5 fw-bold text-dark mb-0">
+                            <i class="bi bi-list-task text-primary me-2"></i>Course Curriculum
+                        </h3>
+                        <span class="badge bg-light text-dark border fw-medium px-3 py-2 rounded-pill">
+                            {{ lectures.count }} Lesson{% if lectures.count != 1 %}s{% endif %}
+                        </span>
+                    </div>
+
+                    {% if lectures %}
+                        <div class="list-group list-group-flush rounded-3 border overflow-hidden">
+                            {% for lecture in lectures %}
+                                {% if lecture.lecture_previewable == "Yes" %}
+                                    <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3 lecture-item border-bottom" data-bs-toggle="modal" data-bs-target="#Modal{{ lecture.id }}">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <i class="bi bi-play-circle-fill text-primary fs-5"></i>
+                                            <span class="fw-semibold text-dark text-start">{{ lecture.lecture_title }}</span>
+                                        </div>
+                                        <span class="badge preview-badge rounded-pill px-3 py-2 d-flex align-items-center gap-1">
+                                            <i class="bi bi-eye-fill"></i> Preview
+                                        </span>
+                                    </button>
+                                {% else %}
+                                    <div class="list-group-item d-flex justify-content-between align-items-center p-3 lecture-item disabled border-bottom">
+                                        <div class="d-flex align-items-center gap-3 text-muted">
+                                            <i class="bi bi-lock-fill fs-5"></i>
+                                            <span>{{ lecture.lecture_title }}</span>
+                                        </div>
+                                        <span class="badge bg-light text-muted border rounded-pill px-3 py-2">
+                                            Locked
+                                        </span>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Video Preview Modal -->
+                                {% if lecture.lecture_video and lecture.lecture_previewable == "Yes" %}
+                                    <div class="modal fade" id="Modal{{ lecture.id }}" tabindex="-1" aria-labelledby="ModalLabel{{ lecture.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <div class="modal-header border-bottom">
+                                                    <h5 class="modal-title fw-bold text-dark h6 mb-0" id="ModalLabel{{ lecture.id }}">
+                                                        <i class="bi bi-play-circle text-primary me-2"></i>Preview: {{ lecture.lecture_title }}
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body p-0">
+                                                    <div class="ratio ratio-16x9">
+                                                        <iframe src="https://www.youtube.com/embed/{{ lecture.lecture_video }}" title="{{ lecture.lecture_title }}" allowfullscreen></iframe>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-top py-2">
+                                                    <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 bg-light rounded-3 border">
+                            <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i> No lectures uploaded for this course yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right Column: Enrollment Card -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-course-card bg-white border">
+                    {% if course.course_image %}
+                        <img src="{{ course.course_image.url }}" class="card-img-top object-fit-cover" height="220" alt="{{ course.course_title }}">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center text-secondary border-bottom" style="height: 220px;">
+                            <i class="bi bi-journal-code display-3 text-muted"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body p-4">
+                        {% if enrolled %}
+                            <a href="{% url 'lecture' course.course_slug %}" class="btn btn-primary w-100 rounded-3 py-2 fw-bold text-white shadow-sm border-0 mb-3" style="background-color: #4f46e5;">
+                                <i class="bi bi-play-fill me-1 fs-5 align-middle"></i> Go to the Course
+                            </a>
+                        {% else %}
+                            <a href="{% url 'enroll' course.id %}" class="btn btn-danger w-100 rounded-3 py-2 fw-bold text-white shadow-sm border-0 mb-3" style="background-color: #dc2626;">
+                                <i class="bi bi-check-circle-fill me-1 align-middle"></i> Enroll Now
+                            </a>
+                        {% endif %}
+
+                        <hr class="text-secondary opacity-25 my-3">
+
+                        <h6 class="fw-bold text-dark mb-3">This course includes:</h6>
+                        <ul class="list-unstyled d-flex flex-column gap-2 text-secondary small mb-0">
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-camera-video text-primary"></i> {{ lectures.count }} Video Lectures
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-infinity text-primary"></i> Full Lifetime Access
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-device-ssd text-primary"></i> Access on Mobile & Desktop
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-award text-primary"></i> Project-based Practical Learning
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

@@ -1,0 +1,145 @@
+{% extends 'base_lecture.html' %}
+{% load static %}
+
+{% block title %}
+{{ course.course_title }} | SPC Academy
+{% endblock title %}
+
+{% block meta %}
+    <meta name="description" content="{{ course.seo_course_description }}">
+    <meta name="keywords" content="{{ course.seo_course_keywords }}">
+{% endblock meta %}
+
+{% block content %}
+
+<!-- Custom Lecture Page Styling -->
+<style>
+    .lecture-main-content {
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+    }
+
+    .video-wrapper {
+        border-radius: 16px;
+        overflow: hidden;
+        background-color: #0f172a;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+    }
+
+    .lecture-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+    }
+
+    .btn-download-notes {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        border: 1px solid #c7d2fe;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-download-notes:hover {
+        background-color: #4f46e5;
+        color: #ffffff;
+        border-color: #4f46e5;
+    }
+
+    .course-badge {
+        font-size: 0.8rem;
+        font-weight: 600;
+        background-color: #f1f5f9;
+        color: #475569;
+    }
+</style>
+
+<div class="container-fluid px-lg-4">
+    <div class="row">
+    
+        <!-- Lecture Sidebar Partial -->
+        {% include 'partials/_lecture_sidebar.html' %}
+
+        <!-- Main Content Area -->
+        <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 lecture-main-content">
+
+            {% if lecture_selected %}
+
+                <!-- Header & Action Toolbar -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+                    <div>
+                        <span class="badge course-badge rounded-pill px-3 py-1.5 mb-2">
+                            📚 {{ course.course_title }}
+                        </span>
+                        <h1 class="h3 fw-bold text-dark mb-0">
+                            {{ lecture_selected.lecture_title }}
+                        </h1>
+                    </div>
+
+                    <!-- Action Buttons (Download Notes / Files) -->
+                    <div class="btn-toolbar mt-2 mt-md-0 gap-2">
+                        {% if lecture_selected.lecture_file %}
+                            <a href="{{ lecture_selected.lecture_file.url }}" target="_blank" class="btn btn-sm btn-download-notes rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                                <i class="bi bi-download fs-6"></i>
+                                <span>Download Notes</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- YouTube Video Player Wrapper -->
+                {% if lecture_selected.lecture_video %}
+                    <div class="video-wrapper ratio ratio-16x9 mb-4">
+                        <iframe 
+                            src="https://www.youtube.com/embed/{{ lecture_selected.lecture_video }}" 
+                            title="{{ lecture_selected.lecture_title }}" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                {% endif %}
+
+                <!-- Lecture Description Section -->
+                <div class="card lecture-card p-4 shadow-sm mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-file-text-fill text-primary fs-5"></i>
+                        <h2 class="h5 fw-bold text-dark mb-0">Lecture Description</h2>
+                    </div>
+                    
+                    <div class="text-secondary lead fs-6" style="line-height: 1.7; white-space: pre-line;">
+                        {% if lecture_selected.lecture_description %}
+                            {{ lecture_selected.lecture_description }}
+                        {% else %}
+                            <p class="text-muted small mb-0">No detailed description available for this lecture.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+            {% else %}
+
+                <!-- Empty State (When no lecture is selected) -->
+                <div class="text-center py-5 my-4">
+                    <div class="p-5 bg-white rounded-4 shadow-sm border mx-auto" style="max-width: 500px;">
+                        <div class="mb-3">
+                            <span class="p-3 bg-light rounded-circle d-inline-block">
+                                <i class="bi bi-play-btn display-4 text-muted"></i>
+                            </span>
+                        </div>
+                        <h3 class="h5 fw-bold text-dark mb-2">No Lecture Selected</h3>
+                        <p class="text-muted small mb-4">
+                            Please select a lecture topic from the sidebar to start learning.
+                        </p>
+                        <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-4 fw-semibold border-0 shadow-sm" style="background-color: #4f46e5;">
+                            <i class="bi bi-house-door me-1"></i> Return to Home
+                        </a>
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </main>
+
+    </div>
+</div>
+
+{% endblock content %}

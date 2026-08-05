@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+User Profile Settings | SPC Academy
+{% endblock title %}
+
+{% block meta %}
+<meta name="description" content="Manage your SPC Academy personal information and account details.">
+<meta name="robots" content="noindex, nofollow">
+{% endblock meta %}
+
+{% block content %}
+
+<!-- Flash Messages Container -->
+<div class="container mt-3">
+    {% include 'partials/_messages.html' ignore missing %}
+</div>
+
+<!-- Profile Page Custom Styling -->
+<style>
+    .profile-hero {
+        background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 3rem 0 2.5rem 0;
+    }
+
+    .profile-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 130px;
+        height: 130px;
+        margin: 0 auto;
+    }
+
+    .profile-avatar {
+        width: 130px;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #ffffff;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .profile-badge {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .form-control:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+</style>
+
+<!-- Profile Hero & Header Section -->
+<header class="profile-hero text-center">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="d-flex justify-content-center mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">Home</a></li>
+                <li class="breadcrumb-item active fw-medium text-dark" aria-current="page">Profile Settings</li>
+            </ol>
+        </nav>
+
+        <span class="badge profile-badge rounded-pill px-3 py-2 mb-2">
+            👤 Account Settings
+        </span>
+
+        <h1 class="display-6 fw-bold text-dark mb-1">
+            User Profile
+        </h1>
+        <p class="text-secondary small mb-0">
+            Manage your personal information and account details
+        </p>
+    </div>
+</header>
+
+<!-- Main Profile Content Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-7">
+                
+                <div class="profile-card p-4 p-md-5">
+                    
+                    <!-- Avatar & User Info Display -->
+                    <div class="text-center mb-4">
+                        <div class="avatar-wrapper mb-3">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.get_full_name }}" class="profile-avatar" />
+                            {% else %}
+                                <img src="{% static 'images/profile.png' %}" alt="{{ user.get_full_name }}" class="profile-avatar" />
+                            {% endif %}
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">
+                            {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}
+                        </h4>
+                        <p class="text-muted small mb-0"><i class="bi bi-envelope me-1"></i>{{ user.email }}</p>
+                    </div>
+
+                    <!-- Profile Update Form -->
+                    <form method="POST" action="{% url 'save-profile' %}">
+                        {% csrf_token %}
+
+                        <!-- First Name & Last Name (Responsive Side-by-Side) -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-sm-6">
+                                <label for="inputFirstName" class="form-label fw-semibold small text-secondary mb-1">First Name</label>
+                                <input type="text" name="first_name" class="form-control rounded-3 py-2" id="inputFirstName" value="{{ user.first_name }}" placeholder="First Name">
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <label for="inputLastName" class="form-label fw-semibold small text-secondary mb-1">Last Name</label>
+                                <input type="text" name="last_name" class="form-control rounded-3 py-2" id="inputLastName" value="{{ user.last_name }}" placeholder="Last Name">
+                            </div>
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div class="mb-3">
+                            <label for="inputDOB" class="form-label fw-semibold small text-secondary mb-1">Date of Birth</label>
+                            <input type="date" name="date_of_birth" class="form-control rounded-3 py-2" id="inputDOB" value="{{ user.profile.date_of_birth|date:'Y-m-d' }}">
+                        </div>
+
+                        <!-- Short Bio -->
+                        <div class="mb-3">
+                            <label for="inputBio" class="form-label fw-semibold small text-secondary mb-1">Short Bio</label>
+                            <textarea name="bio" class="form-control rounded-3 p-3" id="inputBio" rows="3" placeholder="Tell us a little bit about yourself...">{{ user.profile.bio }}</textarea>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-4">
+                            <label for="inputAddress" class="form-label fw-semibold small text-secondary mb-1">Address</label>
+                            <textarea name="address" class="form-control rounded-3 p-3" id="inputAddress" rows="2" placeholder="Your street address or city...">{{ user.profile.address }}</textarea>
+                        </div>
+
+                        <!-- Submit Action Button -->
+                        <div class="pt-2">
+                            <button type="submit" class="btn btn-primary w-100 rounded-3 py-2.5 fw-bold text-white border-0 shadow-sm" style="background-color: #4f46e5;">
+                                <i class="bi bi-check2-circle me-1"></i> Save Changes
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

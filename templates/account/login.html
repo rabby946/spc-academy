@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}
+Log In | SPC Academy
+{% endblock title %}
+
+{% block content %}
+
+
+
+<!-- Professional Form CSS -->
+<style>
+    .auth-section {
+        padding: 3rem 1rem 4rem 1rem;
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+        width: 100%;
+        max-width: 440px;
+        padding: 2.5rem 2rem;
+    }
+
+    /* Standardizing Input Fields */
+    .auth-card form input[type="text"],
+    .auth-card form input[type="email"],
+    .auth-card form input[type="password"] {
+        display: block;
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background-color: #ffffff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .auth-card form input[type="text"]:focus,
+    .auth-card form input[type="email"]:focus,
+    .auth-card form input[type="password"]:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Checkbox Styling */
+    .auth-card form input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #4f46e5;
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .auth-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.825rem;
+        margin: 1.5rem 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .auth-divider span {
+        padding: 0 0.75rem;
+        font-weight: 500;
+    }
+</style>
+
+<!-- Main Login Section -->
+<section class="auth-section">
+    <div class="auth-card">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <span class="fs-1 d-block mb-1">👋</span>
+            <h3 class="fw-bold text-dark mb-1">Welcome Back!</h3>
+            <p class="text-muted small mb-0">Log in to continue learning on SPC Academy</p>
+        </div>
+
+        <!-- Login Form -->
+        <form class="form-signin" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger p-2 small mb-3">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Dynamic Field Loop to Align Items Cleanly -->
+            {% for field in form %}
+                {% if field.field.widget.input_type == 'checkbox' or field.name == 'remember' %}
+                    <!-- Single Row: Left (Remember Me) & Right (Forgot Password) -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+                        <div class="d-flex align-items-center gap-2">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}" class="small text-secondary fw-medium mb-0" style="cursor: pointer;">
+                                Remember Me
+                            </label>
+                        </div>
+                        <a href="{% url 'account_reset_password' %}" class="small text-decoration-none fw-semibold" style="color: #4f46e5;">
+                            Forgot password?
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Text / Password Inputs -->
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold small text-secondary mb-1">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button class="btn btn-primary w-100 rounded-3 py-2 fw-bold text-white shadow-sm border-0 mt-1" style="background-color: #4f46e5;" type="submit">
+                Log In
+            </button>
+        </form>
+
+        <!-- Social Login Section -->
+        {% get_providers as socialaccount_providers %}
+        {% if socialaccount_providers %}
+            <div class="auth-divider">
+                <span>OR CONTINUE WITH</span>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2 fw-medium text-dark border-secondary border-opacity-25 bg-white">
+                    <i class="bi bi-google text-danger fs-5"></i> Log in with Google
+                </a>
+                <a href="{% provider_login_url 'github' process='login' %}" class="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2 fw-medium text-white">
+                    <i class="bi bi-github fs-5"></i> Log in with GitHub
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Signup Prompt -->
+        <div class="text-center mt-4 pt-2 border-top">
+            <p class="small text-muted mb-0">
+                Don't have an account? 
+                <a href="{% url 'account_signup' %}" class="fw-bold text-decoration-none" style="color: #4f46e5;">
+                    Sign up now
+                </a>
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

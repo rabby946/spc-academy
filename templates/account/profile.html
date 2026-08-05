@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}
+User Profile | SPC Academy
+{% endblock title %}
+
+{% block meta %}
+<meta name="description" content="View your SPC Academy profile and account details.">
+<meta name="robots" content="noindex, nofollow">
+{% endblock meta %}
+
+{% block content %}
+
+<!-- Flash Messages Container -->
+<div class="container mt-3">
+    {% include 'partials/_messages.html' ignore missing %}
+</div>
+
+<!-- Profile View Custom Styling -->
+<style>
+    .profile-hero {
+        background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 3rem 0 2.5rem 0;
+    }
+
+    .profile-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin: 0 auto;
+    }
+
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 4px solid #ffffff;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .profile-badge {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .info-list-item {
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 1rem 0;
+    }
+
+    .info-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        min-width: 130px;
+    }
+
+    .info-value {
+        color: #0f172a;
+        font-weight: 500;
+    }
+</style>
+
+<!-- Profile Hero & Header Section -->
+<header class="profile-hero text-center">
+    <div class="container">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="d-flex justify-content-center mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none text-secondary">Home</a></li>
+                <li class="breadcrumb-item active fw-medium text-dark" aria-current="page">My Profile</li>
+            </ol>
+        </nav>
+
+        <span class="badge profile-badge rounded-pill px-3 py-2 mb-2">
+            👤 Student Profile
+        </span>
+
+        <h1 class="display-6 fw-bold text-dark mb-1">
+            Account Overview
+        </h1>
+        <p class="text-secondary small mb-0">
+            View your registered personal information and profile details
+        </p>
+    </div>
+</header>
+
+<!-- Main Profile Card Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-6">
+                
+                <div class="profile-card p-4 p-md-5">
+                    
+                    <!-- Avatar & Display Name -->
+                    <div class="text-center mb-4 pb-3 border-bottom">
+                        <div class="avatar-wrapper mb-3">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.get_full_name }}" class="profile-avatar" />
+                            {% else %}
+                                <img src="{% static 'images/profile.png' %}" alt="{{ user.get_full_name }}" class="profile-avatar" />
+                            {% endif %}
+                        </div>
+
+                        <h3 class="fw-bold text-dark mb-1">
+                            {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username }}{% endif %}
+                        </h3>
+
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-envelope me-1"></i>{{ user.email }}
+                        </p>
+                    </div>
+
+                    <!-- Clean Structured Details List -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-start info-list-item">
+                            <div class="info-label d-flex align-items-center gap-2">
+                                <i class="bi bi-calendar-event text-primary"></i> Date of Birth
+                            </div>
+                            <div class="info-value">
+                                {% if user.profile.date_of_birth %}
+                                    {{ user.profile.date_of_birth|date:"F d, Y" }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">Not specified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start info-list-item">
+                            <div class="info-label d-flex align-items-center gap-2">
+                                <i class="bi bi-card-text text-primary"></i> Short Bio
+                            </div>
+                            <div class="info-value">
+                                {% if user.profile.bio %}
+                                    {{ user.profile.bio }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">No bio added yet</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start info-list-item">
+                            <div class="info-label d-flex align-items-center gap-2">
+                                <i class="bi bi-geo-alt text-primary"></i> Address
+                            </div>
+                            <div class="info-value">
+                                {% if user.profile.address %}
+                                    {{ user.profile.address }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">No address provided</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button to Update Profile -->
+                    <div class="pt-2 text-center">
+                        <a href="{% url 'update-profile' %}" class="btn btn-primary w-100 rounded-3 py-2.5 fw-bold text-white border-0 shadow-sm d-inline-flex align-items-center justify-content-center gap-2" style="background-color: #4f46e5;">
+                            <i class="bi bi-pencil-square"></i> Update Profile Settings
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
