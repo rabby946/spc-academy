@@ -21,9 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=$!k4_-j55pd3i5ku^0$%h%wp^q)6^#xva$gvf(4*ce)i*99mv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "spcacademy.onrender.com",
+    "www.spcacademy.onrender.com",
+    "spcacademybd.com",
+    "www.spcacademybd.com",
+    "spcacbd.com",
+    "www.spcacbd.com",
+]
 
 
 # Application definition
