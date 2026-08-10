@@ -12,26 +12,60 @@
 
 {% block content %}
 
-<!-- Custom Lecture Page Styling -->
+<!-- Anti-Overlap Flexbox Layout Styles -->
 <style>
-    .lecture-main-content {
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
+    :root {
+        --spc-primary: #4f46e5;
+        --spc-primary-hover: #4338ca;
+        --spc-bg-light: #f8fafc;
     }
 
+    /* Main Flex Layout Wrapper */
+    .lecture-layout-container {
+        display: flex;
+        width: 100%;
+        min-height: calc(100vh - 70px);
+        background-color: var(--spc-bg-light);
+    }
+
+    /* Fixed Left Sidebar Container */
+    .lecture-sidebar-area {
+        width: 300px;
+        flex-shrink: 0;
+        background-color: #ffffff;
+        border-right: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    /* Flexible Main Content Area */
+    .lecture-main-area {
+        flex-grow: 1;
+        min-width: 0; /* Prevents video and long text from pushing parent width */
+        padding: 2rem 2.5rem;
+    }
+
+    /* Modern Video Box */
     .video-wrapper {
         border-radius: 16px;
         overflow: hidden;
         background-color: #0f172a;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+        box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    /* Custom Cards */
     .lecture-card {
         background-color: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
     }
 
+    /* Notes Button */
     .btn-download-notes {
         background-color: #e0e7ff;
         color: #4338ca;
@@ -41,108 +75,126 @@
     }
 
     .btn-download-notes:hover {
-        background-color: #4f46e5;
+        background-color: var(--spc-primary);
         color: #ffffff;
-        border-color: #4f46e5;
+        border-color: var(--spc-primary);
+        transform: translateY(-1px);
     }
 
     .course-badge {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 600;
-        background-color: #f1f5f9;
+        background-color: #ffffff;
         color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Mobile & Tablet Fallback */
+    @media (max-width: 991.98px) {
+        .lecture-layout-container {
+            flex-direction: column;
+        }
+        .lecture-sidebar-area {
+            width: 100%;
+            height: auto;
+            position: relative;
+            border-right: none;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .lecture-main-area {
+            padding: 1.25rem 1rem;
+        }
     }
 </style>
 
-<div class="container-fluid px-lg-4">
-    <div class="row">
+<div class="lecture-layout-container">
     
-        <!-- Lecture Sidebar partial -->
+    <!-- 1. Sidebar Partial Container -->
+    <aside class="lecture-sidebar-area">
         {% include 'partials/_lecture_sidebar.html' %}
+    </aside>
 
-        <!-- Main Video & Content Area -->
-        <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 lecture-main-content">
+    <!-- 2. Main Content Area -->
+    <main class="lecture-main-area">
 
-            {% if first_lecture %}
-                {% for lecture_selected in first_lecture %}
+        {% if first_lecture %}
+            {% for lecture_selected in first_lecture %}
 
-                    <!-- Header & Action Toolbar -->
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
-                        <div>
-                            <span class="badge course-badge rounded-pill px-3 py-1.5 mb-2">
-                                📚 {{ course.course_title }}
-                            </span>
-                            <h1 class="h3 fw-bold text-dark mb-0">
-                                {{ lecture_selected.lecture_title }}
-                            </h1>
-                        </div>
+                <!-- Header & Action Toolbar -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <span class="badge course-badge rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                            <i class="bi bi-book-half text-primary"></i> {{ course.course_title }}
+                        </span>
 
-                        <!-- Action Buttons (Download Notes / Supplemental Files) -->
-                        <div class="btn-toolbar mt-2 mt-md-0 gap-2">
-                            {% if lecture_selected.lecture_file %}
-                                <a href="{{ lecture_selected.lecture_file.url }}" target="_blank" class="btn btn-sm btn-download-notes rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
-                                    <i class="bi bi-download fs-6"></i>
-                                    <span>Download Lecture Notes</span>
-                                </a>
-                            {% endif %}
-                        </div>
+                        <!-- Action Button: Download Notes -->
+                        {% if lecture_selected.lecture_file %}
+                            <a href="{{ lecture_selected.lecture_file.url }}" target="_blank" class="btn btn-sm btn-download-notes rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                                <i class="bi bi-download fs-6"></i>
+                                <span>Download Lecture Notes</span>
+                            </a>
+                        {% endif %}
                     </div>
 
-                    <!-- YouTube Video Player Wrapper -->
-                    {% if lecture_selected.lecture_video %}
-                        <div class="video-wrapper ratio ratio-16x9 mb-4">
-                            <iframe 
-                                src="https://www.youtube.com/embed/{{ lecture_selected.lecture_video }}" 
-                                title="{{ lecture_selected.lecture_title }}" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                    {% endif %}
+                    <h1 class="h3 fw-bold text-dark mb-0">
+                        {{ lecture_selected.lecture_title }}
+                    </h1>
+                </div>
 
-                    <!-- Lecture Description Card -->
-                    <div class="card lecture-card p-4 shadow-sm mb-4">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <i class="bi bi-file-text-fill text-primary fs-5"></i>
-                            <h2 class="h5 fw-bold text-dark mb-0">Lecture Description</h2>
-                        </div>
-                        
-                        <div class="text-secondary lead fs-6" style="line-height: 1.7; white-space: pre-line;">
-                            {% if lecture_selected.lecture_description %}
-                                {{ lecture_selected.lecture_description }}
-                            {% else %}
-                                <p class="text-muted small mb-0">No detailed description available for this lecture.</p>
-                            {% endif %}
-                        </div>
+                <!-- YouTube Video Player Wrapper -->
+                {% if lecture_selected.lecture_video %}
+                    <div class="video-wrapper ratio ratio-16x9 mb-4">
+                        <iframe 
+                            src="https://www.youtube-nocookie.com/embed/{{ lecture_selected.lecture_video }}?rel=0&modestbranding=1" 
+                            title="{{ lecture_selected.lecture_title }}" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
                     </div>
-                
-                {% endfor %}
+                {% endif %}
 
-            {% else %}
-
-                <!-- Empty State (No lectures found) -->
-                <div class="text-center py-5 my-4">
-                    <div class="p-5 bg-white rounded-4 shadow-sm border mx-auto" style="max-width: 500px;">
-                        <div class="mb-3">
-                            <span class="p-3 bg-light rounded-circle d-inline-block">
-                                <i class="bi bi-play-btn display-4 text-muted"></i>
-                            </span>
-                        </div>
-                        <h3 class="h5 fw-bold text-dark mb-2">No Lectures Available Yet</h3>
-                        <p class="text-muted small mb-4">
-                            The instructor hasn't uploaded any video lessons for this course yet. Please check back later!
-                        </p>
-                        <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-4 fw-semibold border-0 shadow-sm" style="background-color: #4f46e5;">
-                            <i class="bi bi-house-door me-1"></i> Return to Home
-                        </a>
+                <!-- Lecture Description Card -->
+                <div class="card lecture-card p-4 p-md-5 mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3 border-bottom pb-3">
+                        <i class="bi bi-file-text-fill text-primary fs-4"></i>
+                        <h2 class="h5 fw-bold text-dark mb-0">Lecture Description</h2>
+                    </div>
+                    
+                    <div class="text-secondary lh-lg fs-6" style="white-space: pre-line;">
+                        {% if lecture_selected.lecture_description %}
+                            {{ lecture_selected.lecture_description }}
+                        {% else %}
+                            <p class="text-muted mb-0 fst-italic">No detailed description available for this lecture.</p>
+                        {% endif %}
                     </div>
                 </div>
 
-            {% endif %}
+            {% endfor %}
 
-        </main>
+        {% else %}
 
-    </div>
+            <!-- Empty State (No lectures available) -->
+            <div class="d-flex align-items-center justify-content-center h-100 py-5">
+                <div class="card lecture-card text-center p-5 border-0 shadow-sm" style="max-width: 480px;">
+                    <div class="mb-3">
+                        <div class="p-3 bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
+                            <i class="bi bi-collection-play-fill fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                    <h3 class="h5 fw-bold text-dark mb-2">No Lectures Available Yet</h3>
+                    <p class="text-muted small mb-4">
+                        The instructor hasn't uploaded any video lessons for this course yet. Please check back later!
+                    </p>
+                    <a href="{% url 'home' %}" class="btn btn-primary rounded-pill px-4 btn-sm fw-semibold shadow-sm" style="background-color: #4f46e5;">
+                        <i class="bi bi-house-door me-1"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </main>
+
 </div>
 
 {% endblock content %}
